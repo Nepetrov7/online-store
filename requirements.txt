@@ -4,6 +4,8 @@ pydantic
 pytest
 pytest-asyncio
 sqlalchemy
+psycopg2-binary
 passlib[bcrypt]
 redis
 httpx
+python-dotenv
