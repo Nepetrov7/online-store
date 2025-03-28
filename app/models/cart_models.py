@@ -1,5 +1,7 @@
-from sqlalchemy import Column, Integer, ForeignKey
-from app.models.user_models import Base
+from sqlalchemy import Column, ForeignKey, Integer
+from sqlalchemy.orm import declarative_base
+
+Base = declarative_base()
 
 class CartItem(Base):
     __tablename__ = 'cart_items'
