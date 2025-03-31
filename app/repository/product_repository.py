@@ -48,3 +48,14 @@ class ProductRepository:
         self.session.commit()
         return True
 
+    def update_product(self, product_id: int, updated_data: dict) -> Optional[Product]:
+        product = self.session.query(Product).filter(Product.id == product_id).first()
+        if not product:
+            return None
+
+        for key, value in updated_data.items():
+            setattr(product, key, value)
+
+        self.session.commit()
+        self.session.refresh(product)
+        return product

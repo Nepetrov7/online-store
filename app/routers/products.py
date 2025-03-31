@@ -66,15 +66,12 @@ def update_product(
     updated_data: ProductCreate,
     db: Session = Depends(get_db)
 ):
-    product = db.query(Product).filter(Product.id == product_id).first()
+    repo = ProductRepository(db)
+    product = repo.update_product(product_id, updated_data.dict())
+
     if not product:
         raise HTTPException(status_code=404, detail="Товар не найден")
 
-    for key, value in updated_data.dict().items():
-        setattr(product, key, value)
-
-    db.commit()
-    db.refresh(product)
     return product
 
 # products.py
