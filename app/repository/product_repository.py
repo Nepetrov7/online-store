@@ -38,3 +38,13 @@ class ProductRepository:
         if max_price is not None:
             query = query.filter(Product.price <= max_price)
         return query.offset(offset).limit(limit).all()
+    
+
+    def delete_product(self, product_id: int) -> bool:
+        product = self.session.query(Product).filter(Product.id == product_id).first()
+        if not product:
+            return False
+        self.session.delete(product)
+        self.session.commit()
+        return True
+

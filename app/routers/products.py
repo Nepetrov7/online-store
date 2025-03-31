@@ -77,15 +77,16 @@ def update_product(
     db.refresh(product)
     return product
 
+# products.py
+
 @router.delete("/{product_id}")
 def delete_product(
     product_id: int,
     db: Session = Depends(get_db)
 ):
-    product = db.query(Product).filter(Product.id == product_id).first()
-    if not product:
+    repo = ProductRepository(db)
+    success = repo.delete_product(product_id)
+    if not success:
         raise HTTPException(status_code=404, detail="Товар не найден")
-
-    db.delete(product)
-    db.commit()
     return {"detail": "Товар успешно удалён"}
+
