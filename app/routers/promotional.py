@@ -9,8 +9,10 @@ from app.schemas.promotional_schemas import PromotionalCreate, PromotionalOut, P
 
 router = APIRouter()
 
+
 @router.post("/create", response_model=PromotionalOut)
-def create_promotional(promotional_data: PromotionalCreate, db: Session = Depends(get_db)):
+def create_promotional(promotional_data: PromotionalCreate,
+                       db: Session = Depends(get_db)):
     repo = PromotionalRepository(db)
 
     new_promotional = repo.create_promotional(
@@ -23,6 +25,7 @@ def create_promotional(promotional_data: PromotionalCreate, db: Session = Depend
     )
     return new_promotional
 
+
 @router.get("/all", response_model=List[PromotionalOut])
 def get_all_promotional(db: Session = Depends(get_db)):
     repo = PromotionalRepository(db)
@@ -30,10 +33,13 @@ def get_all_promotional(db: Session = Depends(get_db)):
 
     return promotional
 
+
 @router.delete("/{promotional_id}", response_model=PromotionalDelete)
 def delete_promotional(promotional_id: int, db: Session = Depends(get_db)):
     repo = PromotionalRepository(db)
     deleted = repo.delete_promotional(promotional_id)
     if not deleted:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Promotional not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Promotional not found")
     return {"id": promotional_id}

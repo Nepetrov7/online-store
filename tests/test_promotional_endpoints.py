@@ -5,6 +5,8 @@ from app.main import app
 client = TestClient(app)
 
 # Фикстура для корректных данных промоакции.
+
+
 @pytest.fixture
 def promo_data():
     return {
@@ -18,6 +20,8 @@ def promo_data():
     }
 
 # 1. Тесты для создания промоакции
+
+
 def test_create_promotional_ok(promo_data):
     r = client.post("/promotional/create", json=promo_data)
     # Ожидаем 200, если эндпойнт найден и работает
@@ -25,6 +29,7 @@ def test_create_promotional_ok(promo_data):
     data = r.json()
     assert "id" in data
     assert data["promotion_name"] == promo_data["promotion_name"]
+
 
 def test_create_promotional_invalid_data():
     # Попытка создать промоакцию без обязательного поля promotion_name
@@ -37,10 +42,13 @@ def test_create_promotional_invalid_data():
         "applicable_product_ids": "{1,2,3}"
     }
     r = client.post("/promotional/create", json=invalid_data)
-    # Если валидация срабатывает, ожидаем 422 (или 404, если эндпойнт отсутствует)
+    # Если валидация срабатывает, ожидаем 422 (или 404, если эндпойнт
+    # отсутствует)
     assert r.status_code in (422, 404), r.text
 
 # 2. Тесты для получения всех промоакций
+
+
 def test_get_all_promotional_ok(promo_data):
     # Создаем две промоакции
     r1 = client.post("/promotional/create", json=promo_data)
@@ -58,6 +66,7 @@ def test_get_all_promotional_ok(promo_data):
     # Ожидаем, что в списке будет как минимум 2 записи
     assert len(data) >= 2
 
+
 def test_get_all_promotional_empty():
     # Если база данных пуста, эндпойнт должен вернуть пустой список.
     r = client.get("/promotional/all")
@@ -68,6 +77,8 @@ def test_get_all_promotional_empty():
     # assert len(data) == 0
 
 # 3. Тесты для удаления промоакции
+
+
 def test_delete_promotional_ok(promo_data):
     # Создаем промоакцию
     r = client.post("/promotional/create", json=promo_data)
@@ -79,6 +90,7 @@ def test_delete_promotional_ok(promo_data):
     assert r2.status_code == 200, r2.text
     # Ожидаем, что возвращается {"id": promo_id}
     assert r2.json()["id"] == promo_id
+
 
 def test_delete_promotional_not_found():
     non_existent_id = 999999

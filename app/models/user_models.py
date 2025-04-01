@@ -3,6 +3,7 @@ from sqlalchemy import Column, Integer, String
 
 Base = declarative_base()
 
+
 class User(Base):
     __tablename__ = 'users'
 
@@ -11,4 +12,5 @@ class User(Base):
     last_name = Column(String(50), nullable=False)
     username = Column(String(50), unique=True, nullable=False)
     password_hash = Column(String(255), nullable=False)
-    role = Column(String(50), default="user")  # например: "user", "read_only", "admin"
+    # например: "user", "read_only", "admin"
+    role = Column(String(50), default="user")

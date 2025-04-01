@@ -3,11 +3,13 @@ from app.models.promotional_models import Promotional
 from typing import Optional
 from datetime import date
 
+
 class PromotionalRepository:
     def __init__(self, session: Session):
         self.session = session
 
-    def create_promotional(self, promotion_name: str, discount_type: str, discount_value: float, start_date: date, end_date: date, applicable_product_ids: str) -> Promotional:
+    def create_promotional(self, promotion_name: str, discount_type: str, discount_value: float,
+                           start_date: date, end_date: date, applicable_product_ids: str) -> Promotional:
         promotional = Promotional(
             promotion_name=promotion_name,
             discount_type=discount_type,
@@ -28,12 +30,14 @@ class PromotionalRepository:
             .all()
         )
 
-    def get_promotional_by_id(self, promotional_id: int) -> Optional[Promotional]:
-        return self.session.query(Promotional).filter(Promotional.id == promotional_id).first()
-
+    def get_promotional_by_id(
+            self, promotional_id: int) -> Optional[Promotional]:
+        return self.session.query(Promotional).filter(
+            Promotional.id == promotional_id).first()
 
     def delete_promotional(self, promotional_id: int) -> bool:
-        promotional = self.session.query(Promotional).filter(Promotional.id == promotional_id).first()
+        promotional = self.session.query(Promotional).filter(
+            Promotional.id == promotional_id).first()
         if not promotional:
             return False
         self.session.delete(promotional)

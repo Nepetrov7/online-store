@@ -2,14 +2,16 @@ from sqlalchemy.orm import Session
 from app.models.user_models import User
 from typing import Optional
 
+
 class UserRepository:
     def __init__(self, session: Session):
         self.session = session
 
-    def create_user(self, first_name: str, last_name: str, username: str, password_hash: str, role: str = "user") -> User:
+    def create_user(self, first_name: str, last_name: str,
+                    username: str, password_hash: str, role: str = "user") -> User:
         user = User(
-			first_name=first_name,
-			last_name=last_name,
+            first_name=first_name,
+            last_name=last_name,
             username=username,
             password_hash=password_hash,
             role=role

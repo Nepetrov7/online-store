@@ -8,6 +8,7 @@ from app.schemas.product_schemas import ProductCreate, ProductOut
 
 router = APIRouter()
 
+
 @router.post("/", response_model=ProductOut)
 def create_product(product: ProductCreate, db: Session = Depends(get_db)):
     repo = ProductRepository(db)
@@ -35,6 +36,7 @@ def create_product(product: ProductCreate, db: Session = Depends(get_db)):
 
     return new_product
 
+
 @router.get("/", response_model=List[ProductOut])
 def get_products_by_category(
     category_id: Optional[str] = None,
@@ -45,12 +47,15 @@ def get_products_by_category(
     db: Session = Depends(get_db)
 ):
     repo = ProductRepository(db)
-    return repo.get_products_by_category(category_id, min_price, max_price, limit, offset)
+    return repo.get_products_by_category(
+        category_id, min_price, max_price, limit, offset)
+
 
 @router.get("/{product_id}", response_model=ProductOut)
 def get_product_by_id(product_id: int, db: Session = Depends(get_db)):
     repo = ProductRepository(db)
     return repo.get_product_by_id(product_id)
+
 
 @router.get("/name/{product_name}", response_model=List[ProductOut])
 def get_product_by_name(
@@ -59,6 +64,7 @@ def get_product_by_name(
 ):
     repo = ProductRepository(db)
     return repo.get_product_by_name(product_name)
+
 
 @router.put("/{product_id}", response_model=ProductOut)
 def update_product(
@@ -76,6 +82,7 @@ def update_product(
 
 # products.py
 
+
 @router.delete("/{product_id}")
 def delete_product(
     product_id: int,
@@ -86,4 +93,3 @@ def delete_product(
     if not success:
         raise HTTPException(status_code=404, detail="Товар не найден")
     return {"detail": "Товар успешно удалён"}
-

@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 
+
 class UserRegister(BaseModel):
     first_name: str = Field(..., json_schema_extra="myuser")
     last_name: str = Field(..., json_schema_extra="myuser")
@@ -7,9 +8,11 @@ class UserRegister(BaseModel):
     password: str = Field(..., json_schema_extra="mypassword")
     role: str = Field("user", json_schema_extra="read_only")
 
+
 class UserLogin(BaseModel):
     username: str
     password: str
+
 
 class UserOut(BaseModel):
     id: int
@@ -18,6 +21,7 @@ class UserOut(BaseModel):
 
     class ConfigDict:
         from_attributes = True
+
 
 class TokenOut(BaseModel):
     access_token: str

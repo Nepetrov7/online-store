@@ -3,6 +3,7 @@ from sqlalchemy import Column, Integer, String, Numeric, DateTime, Text
 
 Base = declarative_base()
 
+
 class Promotional(Base):
     __tablename__ = 'promotions'
 
