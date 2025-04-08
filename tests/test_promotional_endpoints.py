@@ -1,5 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
+
 from app.main import app
 
 client = TestClient(app)
@@ -16,8 +17,9 @@ def promo_data():
         "start_date": "2023-06-01T00:00:00",
         "end_date": "2023-06-30T00:00:00",
         # Используем формат PostgreSQL для массива целых чисел:
-        "applicable_product_ids": "{1,2,3}"
+        "applicable_product_ids": "{1,2,3}",
     }
+
 
 # 1. Тесты для создания промоакции
 
@@ -39,12 +41,13 @@ def test_create_promotional_invalid_data():
         "discount_value": 10.0,
         "start_date": "2023-06-01T00:00:00",
         "end_date": "2023-06-30T00:00:00",
-        "applicable_product_ids": "{1,2,3}"
+        "applicable_product_ids": "{1,2,3}",
     }
     r = client.post("/promotional/create", json=invalid_data)
     # Если валидация срабатывает, ожидаем 422 (или 404, если эндпойнт
     # отсутствует)
     assert r.status_code in (422, 404), r.text
+
 
 # 2. Тесты для получения всех промоакций
 
@@ -75,6 +78,7 @@ def test_get_all_promotional_empty():
     assert isinstance(data, list)
     # Если база чистая, можно проверить, что список пустой:
     # assert len(data) == 0
+
 
 # 3. Тесты для удаления промоакции
 

@@ -1,14 +1,17 @@
-from sqlalchemy.orm import Session
-from app.models.product_models import Product
 from typing import Optional
+
+from sqlalchemy.orm import Session
+
+from app.models.product_models import Product
 
 
 class ProductRepository:
     def __init__(self, session: Session):
         self.session = session
 
-    def create_product(self, name: str, category_id: int,
-                       price: float, rating: float, description: str) -> Product:
+    def create_product(
+        self, name: str, category_id: int, price: float, rating: float, description: str
+    ) -> Product:
         product = Product(
             name=name,
             category_id=category_id,
@@ -29,11 +32,16 @@ class ProductRepository:
         )
 
     def get_product_by_id(self, product_id: int) -> Optional[Product]:
-        return self.session.query(Product).filter(
-            Product.id == product_id).first()
+        return self.session.query(Product).filter(Product.id == product_id).first()
 
-    def get_products_by_category(self, category_id: Optional[str] = None, min_price: Optional[float]
-                                 = None, max_price: Optional[float] = None, limit: int = 10, offset: int = 0) -> Optional[Product]:
+    def get_products_by_category(
+        self,
+        category_id: Optional[str] = None,
+        min_price: Optional[float] = None,
+        max_price: Optional[float] = None,
+        limit: int = 10,
+        offset: int = 0,
+    ) -> Optional[Product]:
         query = self.session.query(Product)
         if category_id:
             query = query.filter(Product.category_id == category_id)
@@ -44,18 +52,15 @@ class ProductRepository:
         return query.offset(offset).limit(limit).all()
 
     def delete_product(self, product_id: int) -> bool:
-        product = self.session.query(Product).filter(
-            Product.id == product_id).first()
+        product = self.session.query(Product).filter(Product.id == product_id).first()
         if not product:
             return False
         self.session.delete(product)
         self.session.commit()
         return True
 
-    def update_product(self, product_id: int,
-                       updated_data: dict) -> Optional[Product]:
-        product = self.session.query(Product).filter(
-            Product.id == product_id).first()
+    def update_product(self, product_id: int, updated_data: dict) -> Optional[Product]:
+        product = self.session.query(Product).filter(Product.id == product_id).first()
         if not product:
             return None
 

@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, Path
+from typing import List, Optional
+
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import Optional, List
+
 from app.repository.product_repository import ProductRepository
-from app.utils.db import get_db
-from app.models.product_models import Product
 from app.schemas.product_schemas import ProductCreate, ProductOut
+from app.utils.db import get_db
 
 router = APIRouter()
 
@@ -22,8 +23,7 @@ def create_product(product: ProductCreate, db: Session = Depends(get_db)):
 
     if product.rating >= 0 and product.rating > 5:
         raise HTTPException(
-            status_code=400,
-            detail="Рейтинг товара должен быть от 0 до 5"
+            status_code=400, detail="Рейтинг товара должен быть от 0 до 5"
         )
 
     new_product = repo.create_product(
@@ -31,7 +31,7 @@ def create_product(product: ProductCreate, db: Session = Depends(get_db)):
         category_id=product.category_id,
         price=product.price,
         rating=product.rating,
-        description=product.description
+        description=product.description,
     )
 
     return new_product
@@ -44,11 +44,12 @@ def get_products_by_category(
     max_price: Optional[float] = None,
     limit: int = 10,
     offset: int = 0,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     repo = ProductRepository(db)
     return repo.get_products_by_category(
-        category_id, min_price, max_price, limit, offset)
+        category_id, min_price, max_price, limit, offset
+    )
 
 
 @router.get("/{product_id}", response_model=ProductOut)
@@ -68,9 +69,7 @@ def get_product_by_name(
 
 @router.put("/{product_id}", response_model=ProductOut)
 def update_product(
-    product_id: int,
-    updated_data: ProductCreate,
-    db: Session = Depends(get_db)
+    product_id: int, updated_data: ProductCreate, db: Session = Depends(get_db)
 ):
     repo = ProductRepository(db)
     product = repo.update_product(product_id, updated_data.dict())
@@ -80,14 +79,12 @@ def update_product(
 
     return product
 
+
 # products.py
 
 
 @router.delete("/{product_id}")
-def delete_product(
-    product_id: int,
-    db: Session = Depends(get_db)
-):
+def delete_product(product_id: int, db: Session = Depends(get_db)):
     repo = ProductRepository(db)
     success = repo.delete_product(product_id)
     if not success:

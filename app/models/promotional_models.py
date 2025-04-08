@@ -1,11 +1,11 @@
+from sqlalchemy import Column, DateTime, Integer, Numeric, String, Text
 from sqlalchemy.orm import declarative_base
-from sqlalchemy import Column, Integer, String, Numeric, DateTime, Text
 
 Base = declarative_base()
 
 
 class Promotional(Base):
-    __tablename__ = 'promotions'
+    __tablename__ = "promotions"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     promotion_name = Column(String(255), nullable=False)
