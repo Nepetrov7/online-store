@@ -10,13 +10,16 @@ from app.schemas.promotional_schemas import (
     PromotionalOut,
 )
 from app.utils.db import get_db
+from app.utils.dependencies import get_current_user
 
 router = APIRouter()
 
 
 @router.post("/create", response_model=PromotionalOut)
 def create_promotional(
-    promotional_data: PromotionalCreate, db: Session = Depends(get_db)
+    promotional_data: PromotionalCreate,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
 ):
     repo = PromotionalRepository(db)
 
@@ -40,7 +43,11 @@ def get_all_promotional(db: Session = Depends(get_db)):
 
 
 @router.delete("/{promotional_id}", response_model=PromotionalDelete)
-def delete_promotional(promotional_id: int, db: Session = Depends(get_db)):
+def delete_promotional(
+    promotional_id: int,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
     repo = PromotionalRepository(db)
     deleted = repo.delete_promotional(promotional_id)
     if not deleted:

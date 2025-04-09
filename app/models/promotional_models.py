@@ -1,7 +1,6 @@
 from sqlalchemy import Column, DateTime, Integer, Numeric, String, Text
-from sqlalchemy.orm import declarative_base
 
-Base = declarative_base()
+from app.models.base import Base
 
 
 class Promotional(Base):
