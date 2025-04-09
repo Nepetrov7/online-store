@@ -1,8 +1,9 @@
 import uvicorn
 from fastapi import FastAPI
+
 from app.models.user_models import Base as UserBase
-from app.utils.db import engine
 from app.routers import auth, products, promotional
+from app.utils.db import engine
 
 
 def create_app() -> FastAPI:
@@ -14,17 +15,14 @@ def create_app() -> FastAPI:
     # Подключаем роутеры
     app.include_router(auth.router, prefix="/auth", tags=["Auth"])
     app.include_router(products.router, prefix="/products", tags=["Products"])
-    app.include_router(
-        promotional.router,
-        prefix="/promotional",
-        tags=["Promotional"])
+    app.include_router(promotional.router, prefix="/promotional", tags=["Promotional"])
 
     return app
 
 
 app = create_app()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     uvicorn.run(
         "app.main:app",
         host="0.0.0.0",

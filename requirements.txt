@@ -9,3 +9,7 @@ passlib[bcrypt]
 redis
 httpx
 python-dotenv
+black
+flake8
+isort
+pre-commit
