@@ -59,7 +59,7 @@
 1. собираем образ
 
 ```bash
-docker built online-store .
+docker build . -t online-store
 ```
 
 2.1. поднимаем контейнер - вариант для тестов
