@@ -37,13 +37,26 @@ CREATE TABLE reviews (
 );
 
 CREATE TABLE promotions (
-    id SERIAL PRIMARY KEY, -- уникальный идентификатор акции
-    promotion_name VARCHAR(255) NOT NULL, -- название акции
-    discount_type VARCHAR(50) NOT NULL, -- тип скидки (например, percentage, fixed)
-    discount_value DECIMAL(10, 2) NOT NULL, -- значение скидки
-    start_date DATE NOT NULL, -- дата начала действия акции
-    end_date DATE NOT NULL, -- дата окончания действия акции
-    applicable_product_ids TEXT NOT NULL -- список идентификаторов товаров, на которые распространяется акция
+    id SERIAL PRIMARY KEY,
+    promotion_name VARCHAR(255) NOT NULL,
+    discount_type VARCHAR(50) NOT NULL,
+    discount_value DECIMAL(10, 2) NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL
+);
+
+CREATE TABLE promotion_products (
+    promotion_id INT REFERENCES promotions(id) ON DELETE CASCADE,
+    product_id INT REFERENCES products(id) ON DELETE CASCADE,
+    PRIMARY KEY (promotion_id, product_id)
+);
+
+CREATE TABLE cart (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id),
+    product_id INT REFERENCES products(id),
+    quantity INT DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- TRUNCATE TABLE products CASCADE;
