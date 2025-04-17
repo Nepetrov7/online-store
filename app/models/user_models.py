@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship
 
 from app.models.base import Base
 
@@ -13,3 +14,8 @@ class User(Base):
     password_hash = Column(String(255), nullable=False)
     # например: "user", "read_only", "admin"
     role = Column(String(50), default="user")
+    cart_items = relationship(
+        "Cart",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
