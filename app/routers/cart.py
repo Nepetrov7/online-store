@@ -8,12 +8,17 @@ from app.utils.dependencies import get_current_user, get_db
 router = APIRouter()
 
 
-@router.get("/", response_model=CartList)
-def list_cart(
+def get_cart_service(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
+) -> CartService:
+    return CartService(db, current_user.id)
+
+
+@router.get("/", response_model=CartList)
+def list_cart(
+    service: CartService = Depends(get_cart_service),
 ):
-    service = CartService(db, current_user.id)
     items = service.list_items()
     return {"items": items}
 
@@ -21,10 +26,8 @@ def list_cart(
 @router.post("/", response_model=CartItem, status_code=status.HTTP_201_CREATED)
 def create_cart_item(
     data: CartCreate,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    service: CartService = Depends(get_cart_service),
 ):
-    service = CartService(db, current_user.id)
     return service.add_item(data)
 
 
@@ -32,10 +35,8 @@ def create_cart_item(
 def modify_cart_item(
     item_id: int,
     data: CartUpdate,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    service: CartService = Depends(get_cart_service),
 ):
-    service = CartService(db, current_user.id)
     item = service.update_item(item_id, data)
     if not item:
         raise HTTPException(
@@ -47,10 +48,8 @@ def modify_cart_item(
 @router.delete("/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_cart_item(
     item_id: int,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    service: CartService = Depends(get_cart_service),
 ):
-    service = CartService(db, current_user.id)
     if not service.remove_item(item_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Item not found"
@@ -59,8 +58,6 @@ def delete_cart_item(
 
 @router.delete("/", status_code=status.HTTP_204_NO_CONTENT)
 def delete_all_cart_items(
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    service: CartService = Depends(get_cart_service),
 ):
-    service = CartService(db, current_user.id)
     service.clear()
