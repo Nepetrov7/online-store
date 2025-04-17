@@ -28,7 +28,6 @@ def auth_token():
 
 
 # Фикстура для корректных данных промоакции.
-# Здесь поле applicable_product_ids передается в виде строки, как "{1,2,3}"
 @pytest.fixture
 def promo_data():
     return {
@@ -37,7 +36,6 @@ def promo_data():
         "discount_value": 15.75,
         "start_date": "2023-06-01T00:00:00",
         "end_date": "2023-06-30T00:00:00",
-        "applicable_product_ids": "{1,2,3}",
     }
 
 
@@ -58,7 +56,6 @@ def test_create_promotional_invalid_data(auth_token):
         "discount_value": 10.0,
         "start_date": "2023-06-01T00:00:00",
         "end_date": "2023-06-30T00:00:00",
-        "applicable_product_ids": "{1,2,3}",
     }
     headers = {"Authorization": f"Bearer {auth_token}"}
     r = client.post("/promotional/create", json=invalid_data, headers=headers)

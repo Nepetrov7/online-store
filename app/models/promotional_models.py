@@ -12,4 +12,3 @@ class Promotional(Base):
     discount_value = Column(Numeric(10, 2), nullable=False)
     start_date = Column(DateTime, nullable=False)
     end_date = Column(DateTime, nullable=False)
-    applicable_product_ids = Column(Text, nullable=False)

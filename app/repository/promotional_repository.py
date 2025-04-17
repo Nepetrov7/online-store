@@ -17,7 +17,6 @@ class PromotionalRepository:
         discount_value: float,
         start_date: datetime,
         end_date: datetime,
-        applicable_product_ids: str,
     ) -> Promotional:
         promotional = Promotional(
             promotion_name=promotion_name,
@@ -25,7 +24,6 @@ class PromotionalRepository:
             discount_value=discount_value,
             start_date=start_date,
             end_date=end_date,
-            applicable_product_ids=applicable_product_ids,
         )
         self.session.add(promotional)
         self.session.commit()
@@ -33,12 +31,6 @@ class PromotionalRepository:
         return promotional
 
     def get_active_promotions_for_product(self, product_id: int) -> List[Promotional]:
-        """
-        Пример: выбираем все промоакции, для которых product_id
-        встречается в строковом поле applicable_product_ids.
-        Здесь можно добавить фильтрацию по дате, если нужно
-        (т.е. акции должны быть активны)
-        """
         all_promos = self.session.query(Promotional).all()
         active_promos = []
         for promo in all_promos:
