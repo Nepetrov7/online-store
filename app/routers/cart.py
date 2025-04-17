@@ -2,13 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.schemas.cart_schemas import CartCreate, CartItem, CartList, CartUpdate
-from app.services.cart_service import (
-    add_to_cart,
-    clear_cart,
-    get_cart_items,
-    remove_cart_item,
-    update_cart_item,
-)
+from app.services.cart_service import CartService
 from app.utils.dependencies import get_current_user, get_db
 
 router = APIRouter()
@@ -19,7 +13,8 @@ def list_cart(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
-    items = get_cart_items(db, current_user.id)
+    service = CartService(db, current_user.id)
+    items = service.list_items()
     return {"items": items}
 
 
@@ -29,7 +24,8 @@ def create_cart_item(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
-    return add_to_cart(db, current_user.id, data)
+    service = CartService(db, current_user.id)
+    return service.add_item(data)
 
 
 @router.put("/{item_id}", response_model=CartItem)
@@ -39,7 +35,8 @@ def modify_cart_item(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
-    item = update_cart_item(db, item_id, current_user.id, data)
+    service = CartService(db, current_user.id)
+    item = service.update_item(item_id, data)
     if not item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Item not found"
@@ -53,7 +50,8 @@ def delete_cart_item(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
-    if not remove_cart_item(db, item_id, current_user.id):
+    service = CartService(db, current_user.id)
+    if not service.remove_item(item_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Item not found"
         )
@@ -64,4 +62,5 @@ def delete_all_cart_items(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
-    clear_cart(db, current_user.id)
+    service = CartService(db, current_user.id)
+    service.clear()
