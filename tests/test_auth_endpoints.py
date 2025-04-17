@@ -89,7 +89,7 @@ def test_login_wrong(login_data, expected_status):
 def test_logout(auth_token):
     headers = {"Authorization": f"Bearer {auth_token}"}
     r = client.post("/auth/logout", headers=headers)
-    assert r.status_code == 200, r.text
+    assert r.status_code == 204, r.text
 
 
 # Параметризованный тест для логаута с некорректными токенами.
