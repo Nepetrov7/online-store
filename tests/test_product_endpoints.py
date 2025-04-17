@@ -70,7 +70,7 @@ def test_create_product_invalid_data(auth_token):
 # 2. Тест получения продукта по ID
 def test_get_product_by_id_ok(product_data, auth_token):
     headers = {"Authorization": f"Bearer {auth_token}"}
-    
+
     # Создаем продукт
     r = client.post("/products/", json=product_data, headers=headers)
     assert r.status_code == 200, r.text
@@ -81,6 +81,7 @@ def test_get_product_by_id_ok(product_data, auth_token):
     r = client.get(f"/products/{prod_id}", headers=headers)
     assert r.status_code == 200, r.text
     assert r.json()["id"] == prod_id  # Проверяем, что полученный ID совпадает
+
 
 # 3. Тест получения продуктов по категории (GET /products/?category_id=1)
 def test_get_products_by_category_ok(product_data):

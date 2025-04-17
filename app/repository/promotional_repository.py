@@ -3,12 +3,8 @@ from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
-from app.models.promotional_models import Promotional
+from app.models.promotional_models import Promotional, promotion_products
 
-
-from typing import List, Optional
-from datetime import datetime, timezone
-from sqlalchemy.orm import Session
 
 class PromotionalRepository:
     def __init__(self, session: Session):
@@ -37,8 +33,9 @@ class PromotionalRepository:
     def add_product_to_promotion(self, promotion_id: int, product_id: int) -> None:
         # Добавляем связь между акцией и продуктом
         self.session.execute(
-            "INSERT INTO promotion_products (promotion_id, product_id) VALUES (:promotion_id, :product_id)",
-            {"promotion_id": promotion_id, "product_id": product_id}
+            "INSERT INTO promotion_products (promotion_id, product_id) VALUES "
+            "(:promotion_id, :product_id)",
+            {"promotion_id": promotion_id, "product_id": product_id},
         )
         self.session.commit()
 
@@ -50,12 +47,11 @@ class PromotionalRepository:
             .filter(
                 promotion_products.c.product_id == product_id,
                 Promotional.start_date <= now,
-                Promotional.end_date >= now
+                Promotional.end_date >= now,
             )
             .all()
         )
         return active_promos
-
 
     def get_all_promotional(self) -> List[Promotional]:
         return self.session.query(Promotional).all()
