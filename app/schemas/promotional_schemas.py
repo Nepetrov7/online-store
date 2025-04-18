@@ -13,7 +13,6 @@ class PromotionalCreate(BaseModel):
     end_date: datetime = Field(
         ..., json_schema_extra={"example": "2023-02-01T00:00:00"}
     )
-    applicable_product_ids: str = Field(..., json_schema_extra={"example": "{1,2,3}"})
 
     @field_validator("promotion_name")
     def validate_promotion_name(cls, value: str) -> str:

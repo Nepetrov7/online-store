@@ -29,7 +29,6 @@ def create_promotional(
         discount_value=promotional_data.discount_value,
         start_date=promotional_data.start_date,
         end_date=promotional_data.end_date,
-        applicable_product_ids=promotional_data.applicable_product_ids,
     )
     return new_promotional
 

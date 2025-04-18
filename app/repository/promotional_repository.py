@@ -3,8 +3,12 @@ from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
-from app.models.promotional_models import Promotional
+from app.models.promotional_models import Promotional, promotion_products
 
+
+from typing import List, Optional
+from datetime import datetime, timezone
+from sqlalchemy.orm import Session
 
 class PromotionalRepository:
     def __init__(self, session: Session):
@@ -17,7 +21,6 @@ class PromotionalRepository:
         discount_value: float,
         start_date: datetime,
         end_date: datetime,
-        applicable_product_ids: str,
     ) -> Promotional:
         promotional = Promotional(
             promotion_name=promotion_name,
@@ -25,42 +28,45 @@ class PromotionalRepository:
             discount_value=discount_value,
             start_date=start_date,
             end_date=end_date,
-            applicable_product_ids=applicable_product_ids,
         )
         self.session.add(promotional)
         self.session.commit()
         self.session.refresh(promotional)
         return promotional
 
+    def add_product_to_promotion(self, promotion_id: int, product_id: int) -> None:
+        # Добавляем связь между акцией и продуктом
+        self.session.execute(
+            "INSERT INTO promotion_products (promotion_id, product_id) VALUES (:promotion_id, :product_id)",
+            {"promotion_id": promotion_id, "product_id": product_id}
+        )
+        self.session.commit()
+
+    def add_product_to_promotion(self, promotion_id: int, product_id: int) -> None:
+        # Добавляем связь между акцией и продуктом
+        self.session.execute(
+            "INSERT INTO promotion_products (promotion_id, product_id) VALUES "
+            "(:promotion_id, :product_id)",
+            {"promotion_id": promotion_id, "product_id": product_id},
+        )
+        self.session.commit()
+
     def get_active_promotions_for_product(self, product_id: int) -> List[Promotional]:
-        """
-        Пример: выбираем все промоакции, для которых product_id
-        встречается в строковом поле applicable_product_ids.
-        Здесь можно добавить фильтрацию по дате, если нужно
-        (т.е. акции должны быть активны)
-        """
-        all_promos = self.session.query(Promotional).all()
-        active_promos = []
-        for promo in all_promos:
-            # Преобразуем строку в список целых чисел
-            try:
-                # Убираем фигурные скобки и разделяем по запятым
-                ids = [
-                    int(x.strip())
-                    for x in promo.applicable_product_ids.strip("{}").split(",")
-                    if x.strip().isdigit()
-                ]
-            except Exception:
-                ids = []
-            # Если продукт есть среди указанных, добавляем акцию
-            if product_id in ids:
-                # Если требуется проверить активность акции по дате:
-                now = datetime.now(timezone.utc)
-                if promo.start_date <= now <= promo.end_date:
-                    active_promos.append(promo)
+        now = datetime.now(timezone.utc)
+        active_promos = (
+            self.session.query(Promotional)
+            .join(promotion_products)
+            .filter(
+                promotion_products.c.product_id == product_id,
+                Promotional.start_date <= now,
+                Promotional.end_date >= now,
+            )
+            .all()
+        )
         return active_promos
 
-    def get_all_promotional(self) -> Optional[Promotional]:
+
+    def get_all_promotional(self) -> List[Promotional]:
         return self.session.query(Promotional).all()
 
     def get_promotional_by_id(self, promotional_id: int) -> Optional[Promotional]:
