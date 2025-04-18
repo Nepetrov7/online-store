@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
-from app.models.promotional_models import Promotional
+from app.models.promotional_models import Promotional, promotion_products
 
 
 from typing import List, Optional
@@ -42,6 +42,15 @@ class PromotionalRepository:
         )
         self.session.commit()
 
+    def add_product_to_promotion(self, promotion_id: int, product_id: int) -> None:
+        # Добавляем связь между акцией и продуктом
+        self.session.execute(
+            "INSERT INTO promotion_products (promotion_id, product_id) VALUES "
+            "(:promotion_id, :product_id)",
+            {"promotion_id": promotion_id, "product_id": product_id},
+        )
+        self.session.commit()
+
     def get_active_promotions_for_product(self, product_id: int) -> List[Promotional]:
         now = datetime.now(timezone.utc)
         active_promos = (
@@ -50,7 +59,7 @@ class PromotionalRepository:
             .filter(
                 promotion_products.c.product_id == product_id,
                 Promotional.start_date <= now,
-                Promotional.end_date >= now
+                Promotional.end_date >= now,
             )
             .all()
         )

@@ -1,6 +1,23 @@
-from sqlalchemy import Column, DateTime, Integer, Numeric, String, Text
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, Numeric, String, Table
 
 from app.models.base import Base
+
+promotion_products = Table(
+    "promotion_products",
+    Base.metadata,
+    Column(
+        "promotion_id",
+        Integer,
+        ForeignKey("promotions.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+    Column(
+        "product_id",
+        Integer,
+        ForeignKey("products.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+)
 
 
 class Promotional(Base):
