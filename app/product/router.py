@@ -19,9 +19,10 @@ def list_products(
     category_id: Optional[int] = None,
     service: ProductService = Depends(get_product_service),
 ):
+    prods = service.list_products()
     if category_id is not None:
-        return service.list_by_category(category_id)
-    return service.list_products()
+        prods = [p for p in prods if p.category_id == category_id]
+    return prods
 
 
 @router.get("/{product_id}", response_model=ProductResponse)
