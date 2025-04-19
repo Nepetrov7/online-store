@@ -14,9 +14,22 @@ class UserService:
         # проверяем, что username свободен
         if self.repo.get_by_username(data.username):
             raise HTTPException(status_code=400, detail="Username already exists")
+
+        # хэшируем пароль
+        password_hash = TokenManager.hash_password(data.password)
+
         # создаём нового пользователя
-        user = self.repo.create(data)
-        return user
+        user = self.repo.create(
+            first_name=data.first_name,
+            last_name=data.last_name,
+            username=data.username,
+            password_hash=password_hash,
+            role=data.role,
+        )
+
+        # выдаём токен
+        token = TokenManager.create_access_token({"sub": str(user.id)})
+        return TokenOut(access_token=token, token_type="bearer")
 
     def authenticate(self, data: UserLogin) -> TokenOut:
         # ищем пользователя

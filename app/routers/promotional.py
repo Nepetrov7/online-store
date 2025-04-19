@@ -3,54 +3,76 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.repository.promotional_repository import PromotionalRepository
 from app.schemas.promotional_schemas import (
     PromotionalCreate,
-    PromotionalDelete,
-    PromotionalOut,
+    PromotionalResponse,
+    PromotionalUpdate,
 )
-from app.utils.db import get_db
-from app.utils.dependencies import get_current_user
+from app.services.promotional_service import PromotionalService
+from app.utils.dependencies import get_current_user, get_db
 
 router = APIRouter()
 
 
-@router.post("/create", response_model=PromotionalOut)
+def get_promotional_service(db: Session = Depends(get_db)) -> PromotionalService:
+    return PromotionalService(db)
+
+
+@router.get("/", response_model=List[PromotionalResponse])
+def list_promotional(
+    service: PromotionalService = Depends(get_promotional_service),
+):
+    return service.list_promos()
+
+
+@router.post(
+    "/",
+    response_model=PromotionalResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 def create_promotional(
-    promotional_data: PromotionalCreate,
-    db: Session = Depends(get_db),
+    data: PromotionalCreate,
+    service: PromotionalService = Depends(get_promotional_service),
     current_user=Depends(get_current_user),
 ):
-    repo = PromotionalRepository(db)
-
-    new_promotional = repo.create_promotional(
-        promotion_name=promotional_data.promotion_name,
-        discount_type=promotional_data.discount_type,
-        discount_value=promotional_data.discount_value,
-        start_date=promotional_data.start_date,
-        end_date=promotional_data.end_date,
-    )
-    return new_promotional
+    return service.create_promo(data)
 
 
-@router.get("/all", response_model=List[PromotionalOut])
-def get_all_promotional(db: Session = Depends(get_db)):
-    repo = PromotionalRepository(db)
-    promotional = repo.get_all_promotional()
-
-    return promotional
-
-
-@router.delete("/{promotional_id}", response_model=PromotionalDelete)
-def delete_promotional(
-    promotional_id: int,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+@router.get("/{promo_id}", response_model=PromotionalResponse)
+def get_promotional(
+    promo_id: int,
+    service: PromotionalService = Depends(get_promotional_service),
 ):
-    repo = PromotionalRepository(db)
-    deleted = repo.delete_promotional(promotional_id)
-    if not deleted:
+    promo = service.get_promo(promo_id)
+    if not promo:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Promotional not found"
         )
-    return {"id": promotional_id}
+    return promo
+
+
+@router.put("/{promo_id}", response_model=PromotionalResponse)
+def update_promotional(
+    promo_id: int,
+    data: PromotionalUpdate,
+    service: PromotionalService = Depends(get_promotional_service),
+    current_user=Depends(get_current_user),
+):
+    updated = service.update_promo(promo_id, data)
+    if not updated:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Promotional not found"
+        )
+    return updated
+
+
+@router.delete("/{promo_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_promotional(
+    promo_id: int,
+    service: PromotionalService = Depends(get_promotional_service),
+    current_user=Depends(get_current_user),
+):
+    if not service.delete_promo(promo_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Promotional not found"
+        )

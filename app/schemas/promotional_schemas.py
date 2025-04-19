@@ -1,45 +1,39 @@
+# app/schemas/promotional_schemas.py
+
 from datetime import datetime
+from decimal import Decimal
+from typing import List, Optional
 
-from pydantic import BaseModel, Field, ValidationInfo, field_validator
-
-
-class PromotionalCreate(BaseModel):
-    promotion_name: str = Field(..., json_schema_extra={"example": "SuperSale"})
-    discount_type: str = Field(..., json_schema_extra={"example": "percent"})
-    discount_value: float = Field(..., json_schema_extra={"example": 10.75})
-    start_date: datetime = Field(
-        ..., json_schema_extra={"example": "2023-01-01T00:00:00"}
-    )
-    end_date: datetime = Field(
-        ..., json_schema_extra={"example": "2023-02-01T00:00:00"}
-    )
-
-    @field_validator("promotion_name")
-    def validate_promotion_name(cls, value: str) -> str:
-        if not value.strip():
-            raise ValueError("Promotion name must not be empty")
-        return value
-
-    @field_validator("discount_value")
-    def validate_discount_value(cls, value: float) -> float:
-        if value <= 0:
-            raise ValueError("Discount value must be positive")
-        return value
-
-    @field_validator("end_date")
-    def validate_dates(cls, end_date: datetime, info: ValidationInfo) -> datetime:
-        start_date = info.data.get("start_date")
-        if start_date and end_date <= start_date:
-            raise ValueError("End date must be greater than start date")
-        return end_date
+from pydantic import BaseModel, ConfigDict
 
 
-class PromotionalOut(PromotionalCreate):
+class PromotionalBase(BaseModel):
+    promotion_name: str
+    discount_type: str
+    discount_value: Decimal
+    start_date: datetime
+    end_date: datetime
+
+
+class PromotionalCreate(PromotionalBase):
+    pass
+
+
+class PromotionalUpdate(BaseModel):
+    promotion_name: Optional[str] = None
+    discount_type: Optional[str] = None
+    discount_value: Optional[Decimal] = None
+    start_date: Optional[datetime] = None
+    end_date: Optional[datetime] = None
+
+
+class PromotionalResponse(PromotionalBase):
     id: int
 
+    # Pydantic v2: берем атрибуты из ORM
+    model_config = ConfigDict(from_attributes=True)
 
-class PromotionalDelete(BaseModel):
-    id: int
 
-    class ConfigDict:
-        from_attributes = True
+# не обязательно, если вы отдаете прямо List[PromotionalResponse]
+class PromotionalList(BaseModel):
+    items: List[PromotionalResponse]
