@@ -2,7 +2,7 @@ import jwt
 from fastapi import Depends, Header, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.repository.user_repository import UserRepository
+from app.user.repository import UserRepository
 from app.utils.db import get_db
 from app.utils.token_manager import TokenManager
 

@@ -1,6 +1,6 @@
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, Numeric, String, Table
 
-from app.models.base import Base
+from app.utils.base import Base
 
 promotion_products = Table(
     "promotion_products",

@@ -1,8 +1,8 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.repository.user_repository import UserRepository
-from app.schemas.user_schemas import TokenOut, UserLogin, UserRegister
+from app.user.repository import UserRepository
+from app.user.schema import TokenOut, UserLogin, UserRegister
 from app.utils.token_manager import TokenManager
 
 

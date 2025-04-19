@@ -2,7 +2,7 @@ from typing import Optional
 
 from sqlalchemy.orm import Session
 
-from app.models.user_models import User
+from app.user.model import User
 
 
 class UserRepository:
