@@ -1,14 +1,14 @@
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, Field, field_validator
 
 
-class ProductCreate(BaseModel):
+class ProductBase(BaseModel):
     name: str = Field(..., json_schema_extra={"example": "Sample Product"})
     category_id: int = Field(..., json_schema_extra={"example": 1})
     price: float = Field(..., json_schema_extra={"example": 99.99})
     rating: float = Field(..., json_schema_extra={"example": 4.5})
-    description: str = Field(
+    description: Optional[str] = Field(
         ..., json_schema_extra={"example": "A sample product description."}
     )
 
@@ -43,8 +43,24 @@ class ProductCreate(BaseModel):
         return value
 
 
-class ProductOut(ProductCreate):
+class ProductCreate(ProductBase):
+    pass
+
+
+class ProductUpdate(BaseModel):
+    name: Optional[str] = None
+    category_id: Optional[int] = None
+    price: Optional[float] = None
+    rating: Optional[float] = None
+    description: Optional[str] = None
+
+
+class ProductResponse(ProductBase):
     id: int
     final_price: Optional[float] = None  # Итоговая цена с учетом скидок
 
     model_config = {"from_attributes": True}
+
+
+class ProductsList(BaseModel):
+    items: List[ProductResponse]

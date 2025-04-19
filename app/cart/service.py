@@ -2,14 +2,13 @@ from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
-from app.models.cart_models import Cart
-from app.repository.cart_repository import CartRepository
-from app.schemas.cart_schemas import CartCreate, CartUpdate
+from app.cart.model import Cart
+from app.cart.repository import CartRepository
+from app.cart.schema import CartCreate, CartUpdate
 
 
 class CartService:
     def __init__(self, db: Session, user_id: int):
-        self.db = db
         self.user_id = user_id
         self.repo = CartRepository(db)
 

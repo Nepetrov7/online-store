@@ -1,30 +1,42 @@
-import secrets
-from typing import Dict
+from datetime import datetime, timedelta, timezone
 
-# Словарь вида {token: user_id}
-# В продакшене лучше хранить в Redis, чтобы был общий доступ
-in_memory_tokens: Dict[str, int] = {}
+import jwt
+from passlib.context import CryptContext
 
+from app.utils.config import settings
 
-def create_token_for_user(user_id: int) -> str:
-    """
-    Генерируем случайный токен и сохраняем в словарь in_memory_tokens.
-    Возвращаем сам токен.
-    """
-    token = secrets.token_hex(16)
-    in_memory_tokens[token] = user_id
-    return token
+pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
+ALGORITHM = "HS256"
 
 
-def get_user_id_by_token(token: str) -> int:
-    """
-    Возвращает user_id, если токен есть в словаре, иначе 0 или -1.
-    """
-    return in_memory_tokens.get(token, 0)
+class TokenManager:
+    @staticmethod
+    def hash_password(password: str) -> str:
+        return pwd_ctx.hash(password)
 
+    @staticmethod
+    def verify_password(plain: str, hashed: str) -> bool:
+        return pwd_ctx.verify(plain, hashed)
 
-def delete_token(token: str):
-    """
-    Удаляем токен (logout).
-    """
-    in_memory_tokens.pop(token, None)
+    @staticmethod
+    def create_access_token(data: dict) -> str:
+        to_encode = data.copy()
+        expire = datetime.now(timezone.utc) + timedelta(
+            minutes=settings.access_token_expire_minutes
+        )
+        to_encode.update({"exp": expire, "sub": str(data.get("sub"))})
+        # возвращает строку токена
+        return jwt.encode(to_encode, settings.secret_key, algorithm=ALGORITHM)
+
+    @staticmethod
+    def decode_access_token(token: str) -> dict:
+        """
+        Декодирует и проверяет подпись/срок жизни.
+        Бросает jwt.ExpiredSignatureError или jwt.InvalidTokenError.
+        """
+        return jwt.decode(
+            token,
+            settings.secret_key,
+            algorithms=[ALGORITHM],
+            options={"require_sub": True},
+        )

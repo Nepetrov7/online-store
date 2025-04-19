@@ -70,7 +70,7 @@ def test_create_product_invalid_data(auth_token):
 # 2. Тест получения продукта по ID
 def test_get_product_by_id_ok(product_data, auth_token):
     headers = {"Authorization": f"Bearer {auth_token}"}
-    
+
     # Создаем продукт
     r = client.post("/products/", json=product_data, headers=headers)
     assert r.status_code == 200, r.text
@@ -81,6 +81,7 @@ def test_get_product_by_id_ok(product_data, auth_token):
     r = client.get(f"/products/{prod_id}", headers=headers)
     assert r.status_code == 200, r.text
     assert r.json()["id"] == prod_id  # Проверяем, что полученный ID совпадает
+
 
 # 3. Тест получения продуктов по категории (GET /products/?category_id=1)
 def test_get_products_by_category_ok(product_data):
@@ -140,4 +141,33 @@ def test_delete_product_not_found(auth_token):
     r = client.delete(f"/products/{non_existent_id}", headers=headers)
     assert r.status_code == 404, r.text
     detail = r.json().get("detail", "")
-    assert detail in ["Товар не найден", "Not Found"]
+    assert detail in ["Товар не найден", "Product not found"]
+
+
+def test_final_price_with_promotion(product_data, auth_token):
+    headers = {"Authorization": f"Bearer {auth_token}"}
+    # 1) создаём продукт
+    r_prod = client.post("/products/", json=product_data, headers=headers)
+    assert r_prod.status_code == 200, r_prod.text
+    prod = r_prod.json()
+
+    # 2) подготавливаем данные акции (без product_id)
+    promo_payload = {
+        "promotion_name": "TestPromo",
+        "discount_type": "percentage",
+        "discount_value": 20.0,
+        "start_date": "2025-05-01T00:00:00",
+        "end_date": "2025-05-10T23:59:59",
+    }
+    # 3) создаём акцию
+    r_promo = client.post("/promotional/", json=promo_payload, headers=headers)
+    assert r_promo.status_code == 201, r_promo.text
+
+    # 4) получаем продукт с пересчитанным final_price
+    r = client.get(f"/products/{prod['id']}", headers=headers)
+    assert r.status_code == 200, r.text
+    data = r.json()
+
+    # 5) проверяем, что final_price == price * 0.8
+    expected = product_data["price"] * 0.8
+    assert data["final_price"] == pytest.approx(expected)
