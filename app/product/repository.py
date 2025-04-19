@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
-from app.models.product_models import Product
+from app.product.model import Product
 
 
 class ProductRepository:

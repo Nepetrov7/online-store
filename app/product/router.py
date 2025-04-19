@@ -3,8 +3,8 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.schemas.product_schemas import ProductCreate, ProductResponse, ProductUpdate
-from app.services.product_service import ProductService
+from app.product.schema import ProductCreate, ProductResponse, ProductUpdate
+from app.product.service import ProductService
 from app.utils.dependencies import get_current_user, get_db
 
 router = APIRouter()

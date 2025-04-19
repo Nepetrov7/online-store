@@ -2,9 +2,9 @@ from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
-from app.models.product_models import Product
-from app.repository.product_repository import ProductRepository
-from app.schemas.product_schemas import ProductBase
+from app.product.model import Product
+from app.product.repository import ProductRepository
+from app.product.schema import ProductBase
 
 
 class ProductService:
