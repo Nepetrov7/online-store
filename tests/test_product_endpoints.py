@@ -141,4 +141,4 @@ def test_delete_product_not_found(auth_token):
     r = client.delete(f"/products/{non_existent_id}", headers=headers)
     assert r.status_code == 404, r.text
     detail = r.json().get("detail", "")
-    assert detail in ["Товар не найден", "Not Found"]
+    assert detail in ["Товар не найден", "Product not found"]
