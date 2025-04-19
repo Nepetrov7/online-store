@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.schemas.cart_schemas import CartCreate, CartItem, CartList, CartUpdate
-from app.services.cart_service import CartService
+from app.cart.schema import CartCreate, CartItem, CartList, CartUpdate
+from app.cart.service import CartService
 from app.utils.dependencies import get_current_user, get_db
 
 router = APIRouter()

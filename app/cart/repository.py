@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
-from app.models.cart_models import Cart
+from app.cart.model import Cart
 
 
 class CartRepository:
