@@ -3,12 +3,12 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.schemas.promotional_schemas import (
+from app.promotional.schema import (
     PromotionalCreate,
     PromotionalResponse,
     PromotionalUpdate,
 )
-from app.services.promotional_service import PromotionalService
+from app.promotional.service import PromotionalService
 from app.utils.dependencies import get_current_user, get_db
 
 router = APIRouter()

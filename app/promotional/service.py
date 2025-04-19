@@ -3,9 +3,9 @@ from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
-from app.models.promotional_models import Promotional
-from app.repository.promotional_repository import PromotionalRepository
-from app.schemas.promotional_schemas import PromotionalCreate, PromotionalUpdate
+from app.promotional.model import Promotional
+from app.promotional.repository import PromotionalRepository
+from app.promotional.schema import PromotionalCreate, PromotionalUpdate
 
 
 class PromotionalService:

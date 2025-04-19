@@ -1,7 +1,7 @@
 from typing import List
 
-from app.models.promotional_models import Promotional
 from app.product.model import Product
+from app.promotional.model import Promotional
 
 
 def calculate_final_price(product: Product, promotions: List[Promotional]) -> float:
