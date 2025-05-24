@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
-from app.user.schema import TokenOut, UserLogin, UserOut, UserRegister
+from app.user.schema import TokenOut, UserLogin, UserRegister
 from app.user.service import UserService
 from app.utils.dependencies import get_current_user, get_db
 
@@ -14,7 +14,7 @@ def get_user_service(db: Session = Depends(get_db)) -> UserService:
 
 @router.post(
     "/register",
-    response_model=UserOut,
+    response_model=TokenOut,
     status_code=status.HTTP_201_CREATED,
 )
 def register_user(
