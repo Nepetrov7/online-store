@@ -64,3 +64,10 @@ class ProductResponse(ProductBase):
 
 class ProductsList(BaseModel):
     items: List[ProductResponse]
+
+
+class CategoryResponse(BaseModel):
+    id: int
+    name: str
+
+    model_config = {"from_attributes": True}

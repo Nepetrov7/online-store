@@ -3,7 +3,12 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.product.schema import ProductCreate, ProductResponse, ProductUpdate
+from app.product.schema import (
+    CategoryResponse,
+    ProductCreate,
+    ProductResponse,
+    ProductUpdate,
+)
 from app.product.service import ProductService
 from app.utils.dependencies import get_current_user, get_db
 
@@ -12,6 +17,15 @@ router = APIRouter()
 
 def get_product_service(db: Session = Depends(get_db)) -> ProductService:
     return ProductService(db)
+
+
+@router.get(
+    "/categories", response_model=List[CategoryResponse], status_code=status.HTTP_200_OK
+)
+def get_all_categories(
+    service: ProductService = Depends(get_product_service),
+):
+    return service.get_all_categories()
 
 
 @router.get("/", response_model=List[ProductResponse])
