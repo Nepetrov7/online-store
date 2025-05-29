@@ -84,3 +84,6 @@ class ProductService:
             return False
         self.repo.delete(prod)
         return True
+
+    def get_all_categories(self):
+        return self.repo.get_categories()

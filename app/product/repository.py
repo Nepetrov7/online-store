@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
-from app.product.model import Product
+from app.product.model import Category, Product
 
 
 class ProductRepository:
@@ -35,3 +35,6 @@ class ProductRepository:
     def delete(self, product: Product) -> None:
         self.session.delete(product)
         self.session.commit()
+
+    def get_categories(self) -> list[Category]:
+        return self.session.query(Category).all()

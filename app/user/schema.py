@@ -71,6 +71,8 @@ class UserLogin(BaseModel):
 
 class UserOut(BaseModel):
     id: int
+    first_name: str
+    last_name: str
     username: str
     role: str
 
